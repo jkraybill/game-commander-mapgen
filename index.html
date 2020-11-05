@@ -1,0 +1,220 @@
+<!doctype html>
+<html style="height:100%;" lang="en">
+	<head>
+		<title>Title</title>
+		<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" >
+		<style type="text/css">
+			div#container, div#network {
+				height:100%;
+			}
+			div#ctl {
+				float:left;
+				width:10%;
+			}
+			div#network {
+				float:right;
+				width:90%;
+			}
+			body {
+				font: 12pt 'Noto Serif', serif;
+			}
+			text {
+				color: #d3d3d3;
+				font-family: 'Noto Serif', serif;
+			}
+		</style>
+		<script type="text/javascript" src="visjs/vis-network.min.js"></script>
+
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
+		<script src="./js/bootstrap-input-spinner.js"></script>
+		<script>
+			var network;
+			$(function() {
+				$("input[type='number']").inputSpinner();
+				$("#networksize").change(function() {
+					drawNetwork();
+				});
+				$("#btn-gen").click(function() {
+					drawNetwork();
+				});
+				$("#physics").click(function() {
+					network.setOptions({ physics: { enabled:$(this).is(":checked") } });
+				});
+				$("#repulsion").change(function() {
+					repulsionval = parseInt($(this).val()) * -1000;
+					network.setOptions({ "physics": {
+						"barnesHut": {
+							gravitationalConstant: repulsionval
+						}
+					} });
+				});
+				drawNetwork();
+			});
+		</script>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	</head>
+	<body style="height:100%;">
+		<div id="container">
+			<div id="ctl" style="padding:0.5em;">
+				<form>
+					<div class="form-group" style="margin-top:0.8em;">
+						<label for="networksize">Network Size</label>
+						<input id="networksize" type="number" value="7" min="7" max="100" step="1"/>
+					</div>
+
+					<div class="form-group" style="margin-top:0.8em;">
+						<label for="repulsion">Repulsion</label>
+						<input id="repulsion" type="number" value="6" min="0" max="1000" step="1"/>
+					</div>
+
+					<div class="form-group form-check" style="margin-top:0.8em;">
+						<input id="physics" class="form-check-input" type="checkbox" checked />
+						<label class="form-check-label" for="physics">Physics</label>
+						<small id="physicsHelp" class="form-text text-muted">Enable/disable the physics engine.</small>
+					</div>
+
+						<button id="btn-gen" type="button" class="btn btn-primary">Generate</button>
+					</form>
+			</div>
+
+			<div id="network" class="network"></div>
+		</div>
+
+		<script type="text/javascript">
+			function drawNetwork() {
+				numNodes = parseInt($("#networksize").val());
+
+				var CITIES = ["Kabul","Mariehamn","Tirana","Algiers","Tafuna","Luanda","North Side","St. John's","Buenos Aires","Yerevan","Stepanakert","Oranjestad","Sydney","Vienna","Baku","Nassau","Manama","Dhaka","Bridgetown","Minsk","Brussels","Belize","St. George's","Thimphu","Sarajevo","Gaborone","São Paulo","Sofia","Ouagadougou","Bujumbura","Phnom Penh","Douala","Toronto","Praia","George Town","Bangui","N'Djamena","Santiago","Shanghai","Flying Fish Cove","Bantam","Bogotá","Moroni","Kinshasa","Brazzaville","Avarua","San José","Abidjan","Zagreb","Havana","Willemstad","Nicosia","Prague","Copenhagen","Djibouti","Roseau","Santo Domingo","Quito","Guayaquil","Cairo","San Salvador","Bata","Asmara","Tallinn","Manzini","Addis Ababa","Stanley","Tórshavn","Nasinu","Helsinki","Cayenne","Paris","Papeete","Libreville","Serekunda","Tbilisi","Berlin","Rhine-Ruhr","Accra","Athens","Nuuk","St. George's","Dededo","Saint Peter Port","Bissau","Georgetown","Port-au-Prince","Budapest","Mumbai","Jakarta","Tehran","Baghdad","Dublin","Douglas","Jerusalem","Rome","Kingston","Tokyo","Saint Helier","Amman","Almaty","Nairobi","Betio","Pyongyang","Seoul","Pristina","Kuwait City","Bishkek","Vientiane","Riga","Beirut","Monrovia","Tripoli","Schaan","Vilnius","Luxembourg","Kuala Lumpur","Bamako","Ebeye","Nouakchott","Mamoudzou","Mexico City","Weno","Chişinău","Monaco","Ulaanbaatar","Podgorica","Casablanca","Maputo","Yangon","Windhoek","Kathmandu","Amsterdam","Nouméa","Auckland","Managua","Niamey","Lagos","Alofi","Burnt Pine","Skopje","North Nicosia","Oslo","Muscat","Karachi","Koror","Gaza","Port Moresby","Asunción","Lima","Quezon","Metro Manila","Warsaw","Doha","Bucharest","Moscow","Kigali","Gustavia","Half Tree Hollow","Basseterre","Castries","Marigot","Saint-Pierre","Kingstown","Apia","Dogana","São Tomé","Riyadh","Dakar","Belgrade","Victoria","Freetown","Bratislava","Ljubljana","Honiara","Mogadishu","Hargeisa","Cape Town","King Edward Point","Tskhinvali","Juba","Madrid","Omdurman","Khartoum","Paramaribo","Longyearbyen","Stockholm","Zürich","Damascus","Taipei","Dushanbe","Dar es Salaam","Bangkok","Lomé","Fakaofo","Nukuʻalofa","Tiraspol","Chaguanas","Tunis","Istanbul","Ashgabat","Five Cays","Funafuti","Kampala","Kyiv","Dubai","London","New York","Montevideo","Tashkent","Port Vila","Caracas","Ho Chi Minh City","Road Town","Charlotte Amalie","Mata-Utu","Laayoune","Sana'a","Lusaka","Harare","Kandahar","Jomala","Durrës","Oran","Nu'uuli","Lubango","The Valley","All Saints","Córdoba","Gyumri","Shusha","Sint Nicolaas","Melbourne","Graz","Ganja","Freeport","Riffa","Chittagong","Speightstown","Gomel","Antwerp","San Ignacio","Hamilton","Phuntsholing","Banja Luka","Francistown","Rio de Janeiro","Plovdiv","Bobo-Dioulasso","Muyinga","Siem Reap","Yaoundé","Montreal","Mindelo","Bodden Town","Moundou","Puente Alto","Beijing","Poon Saan","West Island","Medellín","Mutsamudu","Lubumbashi","Pointe-Noire","Amuri","Alajuela","Bouaké","Split","Santiago de Cuba","Sint Michiel","Limassol","Ostrava","Aarhus","Ali Sabieh","Portsmouth","Dili","Guayaquil","Quito","Alexandria","Santa Ana","Malabo","Keren","Tartu","Mbabane","Dire Dawa","Mount Pleasant","Klaksvík","Suva","Espoo","Tampere","Marseille","Faaa","Port-Gentil","Brikama","Batumi","Hamburg","Berlin","Kumasi","Gibraltar","Sisimiut","Gouyave","Yigo","Vale","Gabú","Linden","Gonaïves","Reykjavík","Delhi","Surabaya","Mashhad","Basra","Cork","Ramsey","Tel Aviv","Milan","Spanish Town","Osaka","Saint Saviour","Zarqa","Nur-Sultan","Mombasa","Bairiki","Hamhung","Busan","Prizren","Al Jahra","Osh","Pakxe","Daugavpils","Tripoli","Ganta","Benghazi","Vaduz","Kaunas","Esch-sur-Alzette","George Town","Sikasso","Rita","Nouadhibou","Port Louis","Guadalajara","Palikir","Tiraspol","La Condamine","Erdenet","Nikšić","Fez","Matola","Mandalay","Rundu","Pokhara","Rotterdam","Dumbéa","Christchurch","León","Zinder","Kano","Hakupu","Kingston","Bitola","Famagusta","Bergen","Seeb","Lahore","Airai","Hebron","Lae","Panama City","Arequipa","Manila","Cebu","Kraków","Al Rayyan","Iași","Saint Petersburg","Butare","St. Jean","Jamestown","Charlestown","Gros Islet","Rambaud","Miquelon","Georgetown","Vaitele","Borgo Maggiore","Trindade","Jeddah","Touba","Novi Sad","Anse Boileau","Bo","Singapore","Maribor","Gizo","Hargeisa","Burao","Durban","Bird Island","Akhalgori","Yei","Barcelona","Khartoum","Port Sudan","Lelydorp","Barentsburg","Gothenburg","Geneva","Aleppo","Taichung","Khujand","Mwanza","Nonthaburi","Sokodé","Atafu","Neiafu","Bender","San Fernando","Sfax","Ankara","Türkmenabat","Honda Road","Asau","Nansana","Kharkiv","Abu Dhabi","Birmingham","Los Angeles","Salto","Namangan","Luganville","Maracaibo","Hanoi","Spanish Town","Anna's Retreat","Utufua","Dakhla","Aden","Kitwe","Bulawayo" ];
+
+				var nodes = [];
+
+				function node(id, caption, myrole) {
+					return {
+						id:id,
+						label: caption[0],
+						group: myrole
+					}
+				}
+
+				function role(i, imax) {
+					if (i == 0) {
+						return "a_home";
+					}
+					if (i < 3) {
+						return "a_perimeter";
+					}
+					if (i < 4) {
+						return "b_home";
+					}
+					if (i < 6) {
+						return "b_perimeter";
+					}
+					return "neutral";
+				}
+
+				// create the special home zones and perimeter zones
+				for (i = 0; i < 6; i++) {
+					nodes.push(node(i, CITIES.splice(Math.floor(Math.random()*CITIES.length), 1), role(i, numNodes - 1)));
+				}
+				for (i = 6; i < numNodes; i++) {
+					nodes.push(node(i, CITIES.splice(Math.floor(Math.random()*CITIES.length), 1), role(i, numNodes - 1)));
+				}
+
+				halfNodes = Math.ceil((nodes.length - 6) / 2);
+
+				var edges = [
+					{ "from": 0, "to": 1 },
+					{ "from": 0, "to": 2 },
+					{ "from": 3, "to": 4 },
+					{ "from": 3, "to": 5 },
+
+					// join the perimeter nodes each to a random internal node
+					{ "from": 1, "to": Math.floor(Math.random()*halfNodes) + 6},
+					{ "from": 2, "to": Math.floor(Math.random()*halfNodes) + 6},
+					{ "from": 4, "to": Math.floor(Math.random()*halfNodes) + 6 + halfNodes - 1},
+					{ "from": 5, "to": Math.floor(Math.random()*halfNodes) + 6 + halfNodes - 1},
+				];
+
+				edgeset = new Set();
+
+				for (j = 0; j < 3; j++) {
+					for (i = 0; i < numNodes - 6; i++) { // join each node to some random nodes
+						if (j == 0 || Math.random() < 0.33) {
+							dest = i + 6;
+							origin = dest;
+							edgeid = "xx";
+							it = 0;
+							while (dest == (i + 6) || edgeset.has(edgeid)) {
+								dest = Math.max(6, origin + Math.floor(Math.random() * 7) - 3);
+								if (origin == 7) {
+									console.log("DEST 7 " + dest);
+								}
+								edgeid = ((origin < dest) ? origin : dest) + "_" + ((origin < dest) ? dest : origin);
+								if (it++ > 4) {
+									break;
+								}
+								//console.log("a " + it);
+							}
+							if (it > 4) {
+								continue;
+							}
+							edgeset.add(edgeid);
+							edges.push( { "from": origin, "to": dest});
+						}
+					}
+				}
+
+				var some_data = {
+					"nodes": new vis.DataSet(nodes),
+					"edges": new vis.DataSet(edges)
+				};
+				var container = document.getElementById("network");
+				var options = {
+					"physics": {
+						"barnesHut": {
+							gravitationalConstant: parseInt($("#repulsion").val()) * -1000
+						}
+					},
+					groups: {
+						"a_home":{
+							"borderColor": "#670000",
+							"color": "#A75555"
+						},
+						"a_perimeter":{
+							"borderColor": "#A75555",
+							"color": "#C78888"
+						},
+						"b_home":{
+							"borderColor": "#000067",
+							"color": "#5555A7"
+						},
+						"b_perimeter":{
+							"borderColor": "#5555A7",
+							"color": "#9999C7"
+						},
+						"neutral":{ "borderColor": "#676767","color": "#A7A7A7"}
+					},
+					nodes: {
+						shape: "circle",
+						//size: 60,
+						font: {
+							size: 18,
+							color: "#eeeeee",
+							face: "'Noto Serif', serif"
+						},
+						widthConstraint: 120,
+						borderWidth: 6,
+					},
+					edges: {
+						width: 2,
+					}
+				};
+				network = new vis.Network(container, some_data, options);
+				network.setOptions({ physics: { enabled:$("#physics").is(":checked") } });
+			}
+		</script>
+	</body>
+</html>
